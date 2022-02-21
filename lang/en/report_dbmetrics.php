@@ -4,6 +4,8 @@ $string['pluginname'] = 'Database Metrics Report';
 $string['dbmetrics'] = 'Database Metrics';
 $string['pagetitle'] = '{$a->courseshortname} - Database Metrics Report';
 
+$string['dbmetrics:view'] = 'View';
+
 $string['type'] = 'Report Type';
 $string['type_individual'] = 'Individual (one user per row)';
 $string['type_group'] = 'Group (one group per row)';
