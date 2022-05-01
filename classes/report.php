@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace report_dbmetrics;
 
@@ -11,6 +25,13 @@ use moodle_exception;
 require_once(__DIR__ . '/resultrecord.php');
 require_once(__DIR__ . '/../../../mod/data/lib.php');
 
+/**
+ * A report instance
+ * 
+ * @package report_dbmetrics
+ * @copyright 2022 Ponlawat Weerapanpisit
+ * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class report
 {
     private $_formdata;
@@ -18,6 +39,11 @@ class report
     private $_coursemodules;
     private $_coursemodulecontexts;
 
+    /**
+     * Constructor
+     *
+     * @param object $formdata
+     */
     public function __construct($formdata)
     {
         $this->_formdata = $formdata;
@@ -30,6 +56,11 @@ class report
         }
     }
 
+    /**
+     * Get report results
+     *
+     * @return \report_dbmetrics\resultrecord[] Array of result records, with key being the ID of depending on report type
+     */
     public function getresults()
     {
         $results = $this->prepareresults();
@@ -50,6 +81,13 @@ class report
         return $results;
     }
 
+    /**
+     * Count words of the field in the specified database record
+     *
+     * @param object $datarecord
+     * @param int $fieldid
+     * @return int
+     */
     private function countwords($datarecord, $fieldid)
     {
         global $DB;
@@ -60,6 +98,14 @@ class report
         return str_word_count($contentvalue);
     }
 
+    /**
+     * Count comments of a database record
+     *
+     * @param \report_dbmetrics\resultrecord[] $results
+     * @param int[] $keys
+     * @param object $datarecord
+     * @return void
+     */
     private function processcommentscount(&$results, $keys, $datarecord)
     {
         global $DB;
@@ -85,6 +131,11 @@ class report
         }
     }
 
+    /**
+     * Get all database records aggregated
+     * 
+     * @return object[]
+     */
     private function getdatarecords()
     {
         global $DB;
@@ -122,6 +173,11 @@ class report
         return $records;
     }
 
+    /**
+     * Prepare report results by creating an associative array with keys
+     *
+     * @return \report_dbmetrics\resultrecord[]
+     */
     private function prepareresults()
     {
         global $DB;
@@ -164,6 +220,12 @@ class report
         throw new moodle_exception('Unknown filter type');
     }
 
+    /**
+     * Get the keys of results array that will be affected by the database record
+     *
+     * @param object $datarecord
+     * @return int[]
+     */
     private function gettargetresultrecordkeys($datarecord) {
         if ($this->_formdata->type == REPORT_DBMETRICS_TYPE_INDIVIDUAL) {
             return [$datarecord->userid];
@@ -175,6 +237,11 @@ class report
         throw new moodle_exception('Unknown filter type');
     }
 
+    /**
+     * Get final report column headers in string key names
+     * 
+     * @return string[]
+     */
     public function getheader()
     {
         switch ($this->_formdata->type)
@@ -189,11 +256,21 @@ class report
         throw new moodle_exception('Unknown filter type');
     }
 
+    /**
+     * Get stringified final report column headers
+     *
+     * @return string[]
+     */
     public function getstringedheader()
     {
         return array_map(function($header) { return get_string("header_{$header}", 'report_dbmetrics'); }, $this->getheader());
     }
 
+    /**
+     * Get HTML table of final report results
+     *
+     * @return html_table
+     */
     public function gettable()
     {
         if ($this->_formdata->format != REPORT_DBMETRICS_FORMAT_TABLE) {
@@ -212,6 +289,11 @@ class report
         return $table;
     }
 
+    /**
+     * Download final report results as file
+     *
+     * @return void
+     */
     public function download()
     {
         if ($this->_formdata->format == REPORT_DBMETRICS_FORMAT_TABLE) {
@@ -231,6 +313,15 @@ class report
         );
     }
 
+    /**
+     * Add the value into specified keys of results array
+     *
+     * @param \report_dbmetrics\resultrecord[] $results
+     * @param int[] $keys
+     * @param string $property
+     * @param int $value
+     * @return void
+     */
     private static function sumtargetresultrecord(&$results, $keys, $property, $value) {
         foreach ($keys as $key) {
             if (!isset($results[$key])) {
@@ -246,6 +337,15 @@ class report
         }
     }
 
+    /**
+     * Set the value to specified keys of results array
+     *
+     * @param \report_dbmetrics\resultrecord[] $results
+     * @param int[] $keys
+     * @param string $property
+     * @param int $value
+     * @return void
+     */
     private static function settargetresultrecord(&$results, $keys, $property, $value) {
         foreach ($keys as $key) {
             if (!isset($results[$key])) {

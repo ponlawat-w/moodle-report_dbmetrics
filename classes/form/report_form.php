@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 namespace report_dbmetrics\form;
 
 use html_writer;
@@ -8,16 +23,36 @@ defined('MOODLE_INTERNAL') or die();
 require_once(__DIR__ . '/../../../../lib/formslib.php');
 require_once(__DIR__ . '/../../lib.php');
 
+/**
+ * A form with filtering and options elements for the report
+ * 
+ * @package report_dbmetrics
+ * @copyright 2022 Ponlawat Weerapanpisit
+ * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class filter_form extends \moodleform
 {
+    /**
+     * @var int
+     */
     private $courseid;
 
+    /**
+     * Class constructor
+     *
+     * @param int $courseid
+     */
     public function __construct($courseid)
     {
         $this->courseid = $courseid;
         parent::__construct();
     }
 
+    /**
+     * Form definition
+     *
+     * @return void
+     */
     public function definition()
     {
         $mform = $this->_form;
@@ -62,6 +97,12 @@ class filter_form extends \moodleform
         $this->add_action_buttons(true, get_string('proceed', 'report_dbmetrics'));
     }
 
+    /**
+     * Generate form elements from existing database modules for selecting data fields whose content will counted words in the report
+     *
+     * @param array $datamoduleoptions Array of database module with key being ID and value being module name
+     * @return void
+     */
     private function definewordcountfields($datamoduleoptions)
     {
         global $DB;
